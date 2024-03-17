@@ -91,7 +91,7 @@ def creer_fenetre_demarrage():
     fenetre_demarrage = tk.Tk()
     fenetre_demarrage.title("Mot Mélangé")
 
-    label_titre = tk.Label(fenetre_demarrage, text="Bienvenue au jeu Mot Mélangé !")
+    label_titre = tk.Label(fenetre_demarrage, text="Bienvenue au jeu Mot Mélès !")
     label_titre.pack(pady=10)
 
     bouton_demarrer = tk.Button(fenetre_demarrage, text="Démarrer le jeu", command=lambda: [fenetre_demarrage.destroy(), creer_menu()])
