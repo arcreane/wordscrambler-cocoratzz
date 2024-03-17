@@ -83,24 +83,38 @@
 
 # play_a_new_game()
 
-import tkinter as tk
-import random
-import string
+# Importation de la bibliothèque tkinter pour la création d'interfaces graphiques
+import tkinter as tk  
+# Importation du module random pour la génération de nombres aléatoires
+import random  
+# Importation du module string pour manipuler des chaînes de caractères
+import string  
 
+# Fonction pour créer la fenêtre de démarrage du jeu
 def creer_fenetre_demarrage():
+    # Création de la fenêtre principale
     fenetre_demarrage = tk.Tk()
-    fenetre_demarrage.title("Mot Mélè")
+    # Titre de la fenêtre
+    fenetre_demarrage.title("Mot Mélè") 
 
+    # Création du label de bienvenue
     label_titre = tk.Label(fenetre_demarrage, text="Bienvenue au jeu Mot Mélès !")
     label_titre.pack(pady=10)
 
+    # Bouton pour démarrer le jeu, avec une commande pour détruire la fenêtre de démarrage et créer le menu principal
     bouton_demarrer = tk.Button(fenetre_demarrage, text="Démarrer le jeu", command=lambda: [fenetre_demarrage.destroy(), creer_menu()])
-    bouton_demarrer.pack(pady=5)
+    bouton_demarrer.pack(pady=5) 
 
+    # Bouton pour quitter le jeu, avec une commande pour quitter l'application
     bouton_quitter = tk.Button(fenetre_demarrage, text="Quitter", command=fenetre_demarrage.quit)
-    bouton_quitter.pack(pady=5)
+    bouton_quitter.pack(pady=5)  
 
-    fenetre_demarrage.mainloop()
+    # Lancement de la boucle principale de la fenêtre de démarrage
+    fenetre_demarrage.mainloop() 
+
+# Appel de la fonction pour créer la fenêtre de démarrage lors de l'exécution du script
+creer_fenetre_demarrage()
+
 
 # Charger les mots français depuis un fichier texte
 def charger_mots_francais():
