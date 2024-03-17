@@ -88,6 +88,20 @@ import tkinter as tk
 import random
 import string
 
+def creer_fenetre_demarrage():
+    fenetre_demarrage = tk.Tk()
+
+    label_titre = tk.Label(fenetre_demarrage, text="Bienvenue au jeu Mot Mélangé !")
+    label_titre.pack(pady=10)
+
+    bouton_start = tk.Button(fenetre_demarrage, text="Let's goooooo", command=lambda: [fenetre_demarrage.destroy(), creer_menu()])
+    bouton_start.pack(pady=5)
+
+    bouton_quitter = tk.Button(fenetre_demarrage, text="Exit", command=fenetre_demarrage.quit)
+    bouton_quitter.pack(pady=5)
+
+    fenetre_demarrage.mainloop()
+
 # Charger les mots français depuis un fichier texte
 def charger_mots_francais():
     with open("words.txt", "r", encoding="utf-8") as file:
@@ -285,5 +299,7 @@ def creer_menu():
 # Variable globale pour suivre l'état du tracé sur la grille
 trace_active = False
 
+# Lancer l'application en créant la fenêtre de démarrage
+creer_fenetre_demarrage()
 # Lancer l'application en créant le menu principal
 creer_menu()
