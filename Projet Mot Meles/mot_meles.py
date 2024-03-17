@@ -89,7 +89,7 @@ import string
 
 def creer_fenetre_demarrage():
     fenetre_demarrage = tk.Tk()
-    fenetre_demarrage.title("Mot Mélangé")
+    fenetre_demarrage.title("Mot Mélè")
 
     label_titre = tk.Label(fenetre_demarrage, text="Bienvenue au jeu Mot Mélès !")
     label_titre.pack(pady=10)
