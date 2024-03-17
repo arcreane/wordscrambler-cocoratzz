@@ -90,6 +90,16 @@ import random
 # Importation du module string pour manipuler des chaînes de caractères
 import string  
 
+# Charger les mots français depuis un fichier texte
+def charger_mots_francais():
+    with open("words.txt", "r", encoding="utf-8") as file:
+        return file.read().splitlines()
+
+# Générer un mot aléatoire à partir de la liste de mots français chargés
+def generer_mot_aleatoire(mots_fr, taille_min, taille_max):
+    mots_filtres = [mot for mot in mots_fr if taille_min <= len(mot) <= taille_max]
+    return random.choice(mots_filtres)
+
 # Fonction pour créer la fenêtre de démarrage du jeu
 def creer_fenetre_demarrage():
     # Création de la fenêtre principale
@@ -112,22 +122,6 @@ def creer_fenetre_demarrage():
     # Lancement de la boucle principale de la fenêtre de démarrage
     fenetre_demarrage.mainloop() 
 
-# Appel de la fonction pour créer la fenêtre de démarrage lors de l'exécution du script
-creer_fenetre_demarrage()
-
-
-# Charger les mots français depuis un fichier texte
-def charger_mots_francais():
-    with open("words.txt", "r", encoding="utf-8") as file:
-        return file.read().splitlines()
-
-mots_fr = charger_mots_francais()
-
-# Générer un mot aléatoire à partir de la liste de mots français chargés
-def generer_mot_aleatoire(taille_min, taille_max):
-    mots_filtres = [mot for mot in mots_fr if taille_min <= len(mot) <= taille_max]
-    return random.choice(mots_filtres)
-
 # Générer une lettre majuscule aléatoire
 def generer_lettre_aleatoire():
     return random.choice(string.ascii_uppercase)
@@ -139,7 +133,7 @@ def placer_mot_dans_grille(mot, grille):
     if taille_mot > lignes and taille_mot > colonnes:
         raise ValueError("Le mot est trop grand pour la grille")
 
-#Pour que les mots soient en horizontal, vertical ou en diagonale dans la grille
+    # Pour que les mots soient en horizontal, vertical ou en diagonale dans la grille
     direction = random.choice(['horizontal', 'vertical', 'diagonale'])
     if direction == 'horizontal':
         debut_ligne = random.randint(0, lignes - 1)
@@ -215,21 +209,6 @@ def tracer(event, grille, row, column):
     else:
         effacer_surlignement(grille)
 
-# Afficher un message de victoire
-# def afficher_message_victoire(fenetre):
-#     message_victoire = tk.Label(fenetre, text="Félicitations ! Vous avez trouvé tous les mots !", fg="green")
-#     message_victoire.grid(row=12, column=0, columnspan=10)
-#     bouton_rejouer = tk.Button(fenetre, text="Rejouer", command=rejouer_jeu)
-#     bouton_rejouer.grid(row=13, column=0, columnspan=10)
-
-# Fonction pour rejouer au jeu
-def rejouer_jeu():
-    global fenetre_jeu
-    # Détruire la fenêtre du jeu
-    fenetre_jeu.destroy()
-    # Recréer l'interface du jeu avec la même difficulté
-    creer_interface(difficulte_actuelle)  
-
 # Effacer le surlignement de la grille
 def effacer_surlignement(grille):
     for ligne in grille:
@@ -250,20 +229,23 @@ def creer_interface(difficulte):
     fenetre_menu.withdraw() 
     difficulte_actuelle = difficulte
 
+    # Charger les mots français en fonction de la difficulté
+    mots_fr = charger_mots_francais()
+
     if difficulte == "Medium":
         lignes, colonnes = 7, 15
         # Générer des mots de 4 à 6 lettres
-        mots = [generer_mot_aleatoire(4, 6) for _ in range(10)]  
+        mots = [generer_mot_aleatoire(mots_fr, 4, 6) for _ in range(10)]  
     elif difficulte == "Hard":
         # Générer des mots de 6 à 9 lettres
         lignes, colonnes = 15, 30
-        mots = [generer_mot_aleatoire(6, 9) for _ in range(10)]  
+        mots = [generer_mot_aleatoire(mots_fr, 6, 9) for _ in range(10)]  
     else:
         lignes, colonnes = 5, 10
         # Générer des mots de 1 à 3 lettres
-        mots = [generer_mot_aleatoire(1, 3) for _ in range(10)]  
+        mots = [generer_mot_aleatoire(mots_fr, 1, 3) for _ in range(10)]  
         
-# Créer une nouvelle fenêtre pour le jeu
+    # Créer une nouvelle fenêtre pour le jeu
     fenetre_jeu = tk.Toplevel(fenetre_menu)  
     fenetre_jeu.title(f"Mot Mélangé - Level {difficulte}")
 
@@ -296,15 +278,15 @@ def creer_menu():
     def callback(difficulte):
         return lambda: creer_interface(difficulte)
 
-# bouton easy
+    # bouton easy
     bouton_facile = tk.Button(fenetre_menu, text="Easy", command=callback("Easy"))
     bouton_facile.pack(pady=5)
 
-#bouton medium
+    # bouton medium
     bouton_moyen = tk.Button(fenetre_menu, text="Medium", command=callback("Medium"))
     bouton_moyen.pack(pady=5)
 
-#bouton hard
+    # bouton hard
     bouton_difficile = tk.Button(fenetre_menu, text="Hard", command=callback("Hard"))
     bouton_difficile.pack(pady=5)
 
