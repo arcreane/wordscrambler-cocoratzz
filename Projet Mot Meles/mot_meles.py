@@ -113,243 +113,175 @@
 # play_a_new_game()
 
 import tkinter as tk
-from tkinter import messagebox, simpledialog
 import random
 import string
 
-# Charger les mots français depuis un fichier texte
-def charger_mots_francais():
-    # Cette fonction charge les mots français à partir d'un fichier texte.
+# Load French words from a text file
+def load_french_words():
+    # This function loads French words from a text file.
     with open("words.txt", "r", encoding="utf-8") as file:
         return file.read().splitlines()
 
-# Générer un mot aléatoire à partir de la liste de mots français chargés
-def generer_mot_aleatoire(mots_fr, taille_min, taille_max):
-    # Cette fonction génère un mot aléatoire en fonction de la taille spécifiée.
-    mots_filtres = [mot for mot in mots_fr if taille_min <= len(mot) <= taille_max]
-    return random.choice(mots_filtres)
+# Generate a random word from the loaded French words list
+def generate_random_word(french_words, min_length, max_length):
+    # This function generates a random word based on the specified length.
+    filtered_words = [word for word in french_words if min_length <= len(word) <= max_length]
+    return random.choice(filtered_words)
 
-# Fonction pour créer la fenêtre de démarrage du jeu
-def creer_fenetre_demarrage():
+# Function to create the game startup window
+def create_startup_window():
+    # This function creates the game startup window.
+    startup_window = tk.Tk()
+    startup_window.title("Word Mixup")
+    
+    # Add the welcome message as a Label widget
+    welcome_label = tk.Label(startup_window, text="Welcome to the Word Mixup Game!")
+    welcome_label.pack(pady=10)
 
-    # Cette fonction crée la fenêtre de démarrage du jeu.
+    start_button = tk.Button(startup_window, text="Start!", command=lambda: [startup_window.destroy(), create_menu()])
+    start_button.pack(pady=5)
 
-    fenetre_demarrage = tk.Tk()
-    fenetre_demarrage.title("Mot Mélè") 
+    quit_button = tk.Button(startup_window, text="Quit", command=startup_window.quit)
+    quit_button.pack(pady=5)
 
-    label_titre = tk.Label(fenetre_demarrage, text="Bienvenue au jeu Mot Mélès !")
-    label_titre.pack(pady=10)
+    startup_window.mainloop()
 
-    # Par défaut, le jeu ne sera pas joué avec un timer
-    # avec_timer = tk.BooleanVar()
-    # avec_timer.set(False) 
-    # bouton_demarrer_sans_timer = tk.Button(fenetre_demarrage, text="Démarrer le jeu sans timer", command=lambda: [fenetre_demarrage.destroy(), creer_menu(False)])
-    # bouton_demarrer_sans_timer.pack(pady=5)
-    # bouton_demarrer_avec_timer = tk.Button(fenetre_demarrage, text="Démarrer le jeu avec timer", command=lambda: [fenetre_demarrage.destroy(), creer_menu(True)])
-    # bouton_demarrer_avec_timer.pack(pady=5)
-
-    bouton_quitter = tk.Button(fenetre_demarrage, text="Quitter", command=fenetre_demarrage.quit)
-    bouton_quitter.pack(pady=5)  
-
-    fenetre_demarrage.mainloop()
-
-# Charger les mots français depuis un fichier texte
-def charger_mots_francais():
-    # Cette fonction charge les mots français à partir d'un fichier texte.
-    with open("words.txt", "r", encoding="utf-8") as file:
-        return file.read().splitlines()
-
-# Générer un mot aléatoire à partir de la liste de mots français chargés
-def generer_mot_aleatoire(mots_fr, taille_min, taille_max):
-    # Cette fonction génère un mot aléatoire en fonction de la taille spécifiée.
-    mots_filtres = [mot for mot in mots_fr if taille_min <= len(mot) <= taille_max]
-    return random.choice(mots_filtres)
-
-# Créer une fenêtre de démarrage avec des options pour commencer ou quitter
-def creer_fenetre_demarrage():
-    fenetre_windows = tk.Tk()
-    fenetre_windows.title("Mot Mélès")
-
-    label_titre = tk.Label(fenetre_windows, text="Bienvenue au jeu Mot Mélès !")
-    label_titre.pack(pady=10)
-
-    bouton_start = tk.Button(fenetre_windows, text="Start", command=lambda: [fenetre_windows.destroy(), creer_menu()])
-    bouton_start.pack(pady=5)
-
-    bouton_exit = tk.Button(fenetre_windows, text="Exit", command=fenetre_windows.quit)
-    bouton_exit.pack(pady=5)
-
-    fenetre_windows.mainloop()
-
-# Générer une lettre majuscule aléatoire
-def generer_lettre_aleatoire():
-    # Cette fonction génère une lettre majuscule aléatoire.
+# Generate a random uppercase letter
+def generate_random_letter():
+    # This function generates a random uppercase letter.
     return random.choice(string.ascii_uppercase)
 
-# Placer un mot dans la grille de jeu
-def placer_mot_dans_grille(mot, grille):
-    # Cette fonction place un mot dans la grille de jeu.
-    lignes, colonnes = len(grille), len(grille[0])
-    taille_mot = len(mot)
-    if taille_mot > lignes and taille_mot > colonnes:
-        raise ValueError("Le mot est trop grand pour la grille")
+# Place a word in the game grid
+def place_word_in_grid(word, grid):
+    # This function places a word in the game grid.
+    rows, columns = len(grid), len(grid[0])
+    word_length = len(word)
+    if word_length > rows and word_length > columns:
+        raise ValueError("The word is too large for the grid")
 
-    direction = random.choice(['horizontal', 'vertical', 'diagonale'])
+    direction = random.choice(['horizontal', 'vertical', 'diagonal'])
     if direction == 'horizontal':
-        debut_ligne = random.randint(0, lignes - 1)
-        debut_colonne = random.randint(0, colonnes - taille_mot)
+        start_row = random.randint(0, rows - 1)
+        start_column = random.randint(0, columns - word_length)
     elif direction == 'vertical':
-        debut_ligne = random.randint(0, lignes - taille_mot)
-        debut_colonne = random.randint(0, colonnes - 1)
+        start_row = random.randint(0, rows - word_length)
+        start_column = random.randint(0, columns - 1)
     else:
-        debut_ligne = random.randint(0, lignes - taille_mot)
-        debut_colonne = random.randint(0, colonnes - taille_mot)
+        start_row = random.randint(0, rows - word_length)
+        start_column = random.randint(0, columns - word_length)
 
-    for i in range(taille_mot):
+    for i in range(word_length):
         if direction == 'horizontal':
-            grille[debut_ligne][debut_colonne + i].config(text=mot[i])
+            grid[start_row][start_column + i].config(text=word[i])
         elif direction == 'vertical':
-            grille[debut_ligne + i][debut_colonne].config(text=mot[i])
+            grid[start_row + i][start_column].config(text=word[i])
         else:
-            grille[debut_ligne + i][debut_colonne + i].config(text=mot[i])
+            grid[start_row + i][start_column + i].config(text=word[i])
 
-# Créer la grille de jeu
-def creer_grille(fenetre, lignes, colonnes):
-    # Cette fonction crée la grille de jeu.
-    grille = [[None] * colonnes for _ in range(lignes)]
-    for i in range(lignes):
-        for j in range(colonnes):
-            lettre = generer_lettre_aleatoire()
-            cellule = tk.Label(fenetre, text=lettre, borderwidth=1, relief="solid", width=2, height=1)
-            cellule.grid(row=i, column=j)
-            grille[i][j] = cellule
-            cellule.bind("<Button-1>", lambda event, row=i, column=j: commencer_trace(event, grille, row, column))
-    return grille
+# Create the game grid
+def create_grid(window, rows, columns):
+    # This function creates the game grid.
+    grid = [[None] * columns for _ in range(rows)]
+    for i in range(rows):
+        for j in range(columns):
+            letter = generate_random_letter()
+            cell = tk.Label(window, text=letter, borderwidth=1, relief="solid", width=2, height=1)
+            cell.grid(row=i, column=j)
+            grid[i][j] = cell
+            cell.bind("<Button-1>", lambda event, row=i, column=j: start_trace(event, grid, row, column))
+    return grid
 
-# Créer la liste de mots sur le côté droit de la grille
-def creer_liste_mots(fenetre, mots, lignes):
-    # Cette fonction crée la liste des mots à droite de la grille.
-    labels_mots = []
-    for i, mot in enumerate(mots):
-        label_mot = tk.Label(fenetre, text=mot.upper())
-        label_mot.grid(row=i, column=lignes, sticky="w")  # Placer complètement à droite
-        labels_mots.append(label_mot)
-    return labels_mots
+# Create the list of words on the right side of the grid
+def create_word_list(window, words, columns):
+    # This function creates the list of words on the right side of the grid.
+    word_labels = []
+    for i, word in enumerate(words):
+        word_label = tk.Label(window, text=word.upper())
+        word_label.grid(row=i, column=columns, sticky="w")  # Place completely to the right
+        word_labels.append(word_label)
+    return word_labels
 
-# Afficher "Mot trouvé" en dessous de la grille
-def afficher_mot_trouve(fenetre):
-    # Cette fonction affiche "Mot trouvé" en dessous de la grille.
-    label_mot_trouve = tk.Label(fenetre, text="Mot trouvé", fg="green")
-    label_mot_trouve.grid(row=11, column=0, columnspan=10)
-    fenetre.after(1000, lambda: label_mot_trouve.config(text=""))
+# Display "Word found" below the grid
+def display_word_found(window):
+    # This function displays "Word found" below the grid.
+    word_found_label = tk.Label(window, text="Word found", fg="green")
+    word_found_label.grid(row=11, column=0, columnspan=10)
+    window.after(1000, lambda: word_found_label.config(text=""))
 
-# Vérifier si tous les mots ont été trouvés
-def verifier_mots_trouves(mots_trouves, labels_mots):
-    # Cette fonction vérifie si tous les mots ont été trouvés.
-    mots_restants = [mot.lower() for mot in labels_mots if mot.cget("text").lower() not in mots_trouves]
-    return len(mots_restants) == 0
+# Check if all words have been found
+def check_words_found(found_words, word_labels):
+    # This function checks if all words have been found.
+    remaining_words = [word.lower() for word in word_labels if word.cget("text").lower() not in found_words]
+    return len(remaining_words) == 0
 
-# Démarrer le tracé lorsqu'un clic est effectué sur une cellule de la grille
-def commencer_trace(event, grille, row, column):
-    # Cette fonction démarre le tracé lorsqu'un clic est effectué sur une cellule de la grille.
+# Start tracing when a click is made on a cell in the grid
+def start_trace(event, grid, row, column):
+    # This function starts tracing when a click is made on a cell in the grid.
     global trace_active
     trace_active = True
-    grille[row][column].config(bg="pink")
-    grille[row][column].bind("<B1-Motion>", lambda event, r=row, c=column: tracer(event, grille, r, c))
+    grid[row][column].config(bg="pink")
+    grid[row][column].bind("<B1-Motion>", lambda event, r=row, c=column: trace(event, grid, r, c))
 
-# Continuer le tracé lorsqu'un mouvement de souris est détecté
-def tracer(event, grille, row, column):
-    # Cette fonction continue le tracé lorsqu'un mouvement de souris est détecté.
-    global mots_trouves
+# Continue tracing when mouse movement is detected
+def trace(event, grid, row, column):
+    # This function continues tracing when mouse movement is detected.
+    global found_words
     if trace_active:
-        mot = grille[row][column].cget("text").lower()
-        if mot in mots_trouves:
-            grille[row][column].config(bg="blue")
-            mots_trouves.append(mot)
-            afficher_mot_trouve(grille[0][0].master)
-            if verifier_mots_trouves(mots_trouves, labels_mots):
-                afficher_message_victoire(grille[0][0].master)
+        word = grid[row][column].cget("text").lower()
+        if word in found_words:
+            grid[row][column].config(bg="blue")
+            found_words.append(word)
+            display_word_found(grid[0][0].master)
+            if check_words_found(found_words, word_labels):
+                display_victory_message(grid[0][0].master)
         else:
-            effacer_surlignement(grille)
+            clear_highlight(grid)
     else:
-        effacer_surlignement(grille)
+        clear_highlight(grid)
 
-# Effacer le surlignement de la grille
-def effacer_surlignement(grille):
-    # Cette fonction efface le surlignement de la grille.
-    for ligne in grille:
-        for cellule in ligne:
-            cellule.config(bg="white")
+# Clear the grid highlight
+def clear_highlight(grid):
+    # This function clears the grid highlight.
+    for row in grid:
+        for cell in row:
+            cell.config(bg="white")
 
-# Fonction pour revenir au menu principal depuis le jeu
-def retour_menu(fenetre_jeu):
-    # Cette fonction permet de revenir au menu principal depuis le jeu.
-    fenetre_jeu.destroy() 
-    fenetre_menu.deiconify()  
+# Function to return to the main menu from the game
+def return_to_menu(game_window):
+    # This function allows returning to the main menu from the game.
+    game_window.destroy() 
+    menu_window.deiconify()  
 
-# Créer l'interface du jeu en fonction du niveau de difficulté choisi
-def creer_interface(difficulte):
-    # Cette fonction crée l'interface du jeu en fonction du niveau de difficulté choisi.
-    global fenetre_menu, fenetre_jeu, difficulte_actuelle, mots_trouves, labels_mots, grille
-    fenetre_menu.withdraw() 
-    difficulte_actuelle = difficulte
+# Create the main menu to select the difficulty level
+def create_menu():
+    # This function creates the main menu to select the difficulty level.
+    global menu_window
+    menu_window = tk.Tk()
+    menu_window.title("Difficulty Selection Menu")
 
-    mots_fr = charger_mots_francais()
+    title_label = tk.Label(menu_window, text="Select the difficulty")
+    title_label.pack(pady=10)
 
-    if difficulte == "Medium":
-        lignes, colonnes = 7, 15
-        mots = [generer_mot_aleatoire(mots_fr, 4, 6) for _ in range(10)]  
-    elif difficulte == "Hard":
-        lignes, colonnes = 15, 30
-        mots = [generer_mot_aleatoire(mots_fr, 6, 9) for _ in range(10)]  
-    else:
-        lignes, colonnes = 5, 10
-        mots = [generer_mot_aleatoire(mots_fr, 1, 3) for _ in range(10)]  
+    def callback(difficulty):
+        return lambda: create_interface(difficulty)
 
-    fenetre_jeu = tk.Toplevel(fenetre_menu)  
-    fenetre_jeu.title(f"Mot Mélangé - Level {difficulte}")
+    easy_button = tk.Button(menu_window, text="Easy", command=callback("Easy"))
+    easy_button.pack(pady=5)
 
-    frame_jeu = tk.Frame(fenetre_jeu)
-    frame_jeu.pack(fill=tk.BOTH, expand=True)
+    medium_button = tk.Button(menu_window, text="Medium", command=callback("Medium"))
+    medium_button.pack(pady=5)
 
-    grille = creer_grille(frame_jeu, lignes, colonnes)
-    labels_mots = creer_liste_mots(frame_jeu, mots, colonnes)
-    mots_trouves = []
+    hard_button = tk.Button(menu_window, text="Hard", command=callback("Hard"))
+    hard_button.pack(pady=5)
+    
+    # Button to exit the application
+    exit_button = tk.Button(menu_window, text="Exit", command=menu_window.destroy)  # Close the menu window
+    exit_button.pack(pady=5)
 
-    for mot in mots:
-        placer_mot_dans_grille(mot.upper(), grille)
+    menu_window.mainloop()
 
-    barre_menu = tk.Menu(fenetre_jeu)
-    fenetre_jeu.config(menu=barre_menu)
-
-    barre_menu.add_command(label="← Menu", command=lambda: retour_menu(fenetre_jeu))
-
-# Créer le menu principal pour sélectionner le niveau de difficulté
-def creer_menu():
-    # Cette fonction crée le menu principal pour sélectionner le niveau de difficulté.
-    global fenetre_menu
-    fenetre_menu = tk.Tk()
-    fenetre_menu.title("Menu de sélection de la difficulté")
-
-    label_titre = tk.Label(fenetre_menu, text="Sélectionnez la difficulté")
-    label_titre.pack(pady=10)
-
-    def callback(difficulte):
-        return lambda: creer_interface(difficulte)
-
-    bouton_facile = tk.Button(fenetre_menu, text="Easy", command=callback("Easy"))
-    bouton_facile.pack(pady=5)
-
-    bouton_moyen = tk.Button(fenetre_menu, text="Medium", command=callback("Medium"))
-    bouton_moyen.pack(pady=5)
-
-    bouton_difficile = tk.Button(fenetre_menu, text="Hard", command=callback("Hard"))
-    bouton_difficile.pack(pady=5)
-
-    fenetre_menu.mainloop()
-
-# Variable globale pour suivre l'état du tracé sur la grille
+# Global variable to track the trace state on the grid
 trace_active = False
 
-# Lancer l'application en créant la fenêtre de démarrage
-creer_fenetre_demarrage()
+# Launch the application by creating the startup window
+create_startup_window()
