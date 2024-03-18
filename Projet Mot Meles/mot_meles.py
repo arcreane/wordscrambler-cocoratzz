@@ -116,213 +116,213 @@ import tkinter as tk
 import random
 import string
 
-# Charger les mots français depuis un fichier texte
-def charger_mots_francais():
+# Load French words from a text file
+def load_french_words():
     with open("words.txt", "r", encoding="utf-8") as file:
         return file.read().splitlines()
 
-# Générer un mot aléatoire à partir de la liste de mots français chargés
-def generer_mot_aleatoire(mots_fr, taille_min, taille_max):
-    mots_filtres = [mot for mot in mots_fr if taille_min <= len(mot) <= taille_max]
-    return random.choice(mots_filtres)
+# Generate a random word from the loaded French words list
+def generate_random_word(french_words, min_length, max_length):
+    filtered_words = [word for word in french_words if min_length <= len(word) <= max_length]
+    return random.choice(filtered_words)
 
-# Fonction pour créer la fenêtre de démarrage du jeu
-def creer_fenetre_demarrage():
-    fenetre_demarrage = tk.Tk()
-    fenetre_demarrage.title("Mot Mélangé") 
+# Function to create the game start window
+def create_start_window():
+    start_window = tk.Tk()
+    start_window.title("Word Scrambler") 
 
-    label_titre = tk.Label(fenetre_demarrage, text="Bienvenue au jeu Mot Mélangé !")
-    label_titre.pack(pady=10)
+    title_label = tk.Label(start_window, text="Welcome to the Word Scrambler game!")
+    title_label.pack(pady=10)
 
-    bouton_demarrer = tk.Button(fenetre_demarrage, text="Démarrer le jeu", command=lambda: [fenetre_demarrage.destroy(), creer_menu()])
-    bouton_demarrer.pack(pady=5)
+    start_button = tk.Button(start_window, text="Start the game", command=lambda: [start_window.destroy(), create_menu()])
+    start_button.pack(pady=5)
 
-    bouton_quitter = tk.Button(fenetre_demarrage, text="Quitter", command=fenetre_demarrage.quit)
-    bouton_quitter.pack(pady=5)  
+    quit_button = tk.Button(start_window, text="Quit", command=start_window.quit)
+    quit_button.pack(pady=5)  
 
-    fenetre_demarrage.mainloop()
+    start_window.mainloop()
 
-# Variable globale pour mémoriser la disposition actuelle de lettres
-disposition_lettres = []
+# Global variable to store the current letter arrangement
+letter_arrangement = []
 
-# Fonction pour mémoriser la disposition actuelle de lettres
-def memoriser_disposition_lettres(grille):
-    global disposition_lettres
-    disposition_lettres = [[cellule.cget("text") for cellule in ligne] for ligne in grille]
+# Function to store the current letter arrangement
+def store_letter_arrangement(grid):
+    global letter_arrangement
+    letter_arrangement = [[cell.cget("text") for cell in row] for row in grid]
 
-# Fonction pour recharger la grille avec la disposition actuelle de lettres
-def recharger_grille(grille):
-    for i in range(len(grille)):
-        for j in range(len(grille[0])):
-            grille[i][j].config(text=disposition_lettres[i][j])
+# Function to reload the grid with the current letter arrangement
+def reload_grid(grid):
+    for i in range(len(grid)):
+        for j in range(len(grid[0])):
+            grid[i][j].config(text=letter_arrangement[i][j])
 
-# Créer une nouvelle grille avec des mots basés sur un autre thème
-def changer_theme():
-    global labels_mots, mots_trouves
-    mots_fr = charger_mots_francais()
-    nouveaux_mots = [generer_mot_aleatoire(mots_fr, len(mot), len(mot)) for mot in labels_mots]
-    for i, mot in enumerate(nouveaux_mots):
-        labels_mots[i].config(text=mot.upper())
-    mots_trouves = []
-    recharger_grille(grille)
+# Create a new grid with words based on another theme
+def change_theme():
+    global word_labels, found_words
+    french_words = load_french_words()
+    new_words = [generate_random_word(french_words, len(word), len(word)) for word in word_labels]
+    for i, word in enumerate(new_words):
+        word_labels[i].config(text=word.upper())
+    found_words = []
+    reload_grid(grid)
 
-# Générer une lettre majuscule aléatoire
-def generer_lettre_aleatoire():
+# Generate a random uppercase letter
+def generate_random_letter():
     return random.choice(string.ascii_uppercase)
 
-# Placer un mot dans la grille de jeu
-def placer_mot_dans_grille(mot, grille):
-    lignes, colonnes = len(grille), len(grille[0])
-    taille_mot = len(mot)
-    if taille_mot > lignes and taille_mot > colonnes:
-        raise ValueError("Le mot est trop grand pour la grille")
+# Place a word in the game grid
+def place_word_in_grid(word, grid):
+    rows, columns = len(grid), len(grid[0])
+    word_length = len(word)
+    if word_length > rows and word_length > columns:
+        raise ValueError("The word is too big for the grid")
 
-    direction = random.choice(['horizontal', 'vertical', 'diagonale'])
+    direction = random.choice(['horizontal', 'vertical', 'diagonal'])
     if direction == 'horizontal':
-        debut_ligne = random.randint(0, lignes - 1)
-        debut_colonne = random.randint(0, colonnes - taille_mot)
+        start_row = random.randint(0, rows - 1)
+        start_column = random.randint(0, columns - word_length)
     elif direction == 'vertical':
-        debut_ligne = random.randint(0, lignes - taille_mot)
-        debut_colonne = random.randint(0, colonnes - 1)
+        start_row = random.randint(0, rows - word_length)
+        start_column = random.randint(0, columns - 1)
     else:
-        debut_ligne = random.randint(0, lignes - taille_mot)
-        debut_colonne = random.randint(0, colonnes - taille_mot)
+        start_row = random.randint(0, rows - word_length)
+        start_column = random.randint(0, columns - word_length)
 
-    for i in range(taille_mot):
+    for i in range(word_length):
         if direction == 'horizontal':
-            grille[debut_ligne][debut_colonne + i].config(text=mot[i])
+            grid[start_row][start_column + i].config(text=word[i])
         elif direction == 'vertical':
-            grille[debut_ligne + i][debut_colonne].config(text=mot[i])
+            grid[start_row + i][start_column].config(text=word[i])
         else:
-            grille[debut_ligne + i][debut_colonne + i].config(text=mot[i])
+            grid[start_row + i][start_column + i].config(text=word[i])
 
-# Créer la grille de jeu
-def creer_grille(fenetre, lignes, colonnes):
-    grille = [[None] * colonnes for _ in range(lignes)]
-    for i in range(lignes):
-        for j in range(colonnes):
-            lettre = generer_lettre_aleatoire()
-            cellule = tk.Label(fenetre, text=lettre, borderwidth=1, relief="solid", width=2, height=1)
-            cellule.grid(row=i, column=j)
-            grille[i][j] = cellule
-    return grille
+# Create the game grid
+def create_grid(window, rows, columns):
+    grid = [[None] * columns for _ in range(rows)]
+    for i in range(rows):
+        for j in range(columns):
+            letter = generate_random_letter()
+            cell = tk.Label(window, text=letter, borderwidth=1, relief="solid", width=2, height=1)
+            cell.grid(row=i, column=j)
+            grid[i][j] = cell
+    return grid
 
-# Créer la liste de mots sur le côté droit de la grille
-def creer_liste_mots(fenetre, mots, lignes):
-    labels_mots = []
-    for i, mot in enumerate(mots):
-        label_mot = tk.Label(fenetre, text=mot.upper())
-        label_mot.grid(row=i, column=lignes, sticky="w")  # Placer complètement à droite
-        labels_mots.append(label_mot)
-    return labels_mots
+# Create the list of words on the right side of the grid
+def create_word_list(window, words, rows):
+    word_labels = []
+    for i, word in enumerate(words):
+        word_label = tk.Label(window, text=word.upper())
+        word_label.grid(row=i, column=rows, sticky="w")  # Place completely to the right
+        word_labels.append(word_label)
+    return word_labels
 
-# Afficher "Mot trouvé" en dessous de la grille
-def afficher_mot_trouve(fenetre):
-    label_mot_trouve = tk.Label(fenetre, text="Mot trouvé", fg="green")
-    label_mot_trouve.grid(row=11, column=0, columnspan=10)
-    fenetre.after(1000, lambda: label_mot_trouve.config(text=""))
+# Display "Word found" below the grid
+def display_word_found(window):
+    word_found_label = tk.Label(window, text="Word found", fg="green")
+    word_found_label.grid(row=11, column=0, columnspan=10)
+    window.after(1000, lambda: word_found_label.config(text=""))
 
-# Vérifier si tous les mots ont été trouvés
-def verifier_mots_trouves(mots_trouves, labels_mots):
-    mots_restants = [mot.lower() for mot in labels_mots if mot.cget("text").lower() not in mots_trouves]
-    return len(mots_restants) == 0
+# Check if all words have been found
+def check_words_found(found_words, word_labels):
+    remaining_words = [word.lower() for word in word_labels if word.cget("text").lower() not in found_words]
+    return len(remaining_words) == 0
 
-# Démarrer le tracé lorsqu'un clic est effectué sur une cellule de la grille
-def demarrer_tracage(event, grille, ligne, colonne):
-    global tracage_actif
-    tracage_actif = True
-    grille[ligne][colonne].config(bg="pink")
-    grille[ligne][colonne].bind("<B1-Motion>", lambda event, l=ligne, c=colonne: continuer_tracage(event, grille, l, c))
+# Start tracing when a click is made on a grid cell
+def start_tracing(event, grid, row, column):
+    global tracing_active
+    tracing_active = True
+    grid[row][column].config(bg="pink")
+    grid[row][column].bind("<B1-Motion>", lambda event, r=row, c=column: continue_tracing(event, grid, r, c))
 
-# Continuer le tracé lorsqu'un mouvement de souris est détecté
-def continuer_tracage(event, grille, ligne, colonne):
-    global mots_trouves
-    if tracage_actif:
-        mot = grille[ligne][colonne].cget("text").lower()
-        if mot in mots_trouves:
-            grille[ligne][colonne].config(bg="blue")
-            mots_trouves.append(mot)
-            afficher_mot_trouve(grille[0][0].master)
-            if verifier_mots_trouves(mots_trouves, labels_mots):
-                afficher_message_victoire(grille[0][0].master)
+# Continue tracing when mouse movement is detected
+def continue_tracing(event, grid, row, column):
+    global found_words
+    if tracing_active:
+        word = grid[row][column].cget("text").lower()
+        if word in found_words:
+            grid[row][column].config(bg="blue")
+            found_words.append(word)
+            display_word_found(grid[0][0].master)
+            if check_words_found(found_words, word_labels):
+                display_victory_message(grid[0][0].master)
         else:
-            effacer_mise_en_surbrillance(grille)
+            clear_highlighting(grid)
     else:
-        effacer_mise_en_surbrillance(grille)
+        clear_highlighting(grid)
 
-# Effacer la mise en surbrillance de la grille
-def effacer_mise_en_surbrillance(grille):
-    for ligne in grille:
-        for cellule in ligne:
-            cellule.config(bg="white")
+# Clear grid highlighting
+def clear_highlighting(grid):
+    for row in grid:
+        for cell in row:
+            cell.config(bg="white")
 
-# Fonction pour revenir au menu principal depuis le jeu
-def retourner_au_menu(fenetre_jeu, fenetre_menu):
-    fenetre_jeu.destroy() 
-    fenetre_menu.deiconify()
+# Function to return to the main menu from the game
+def return_to_menu(game_window, main_menu_window):
+    game_window.destroy() 
+    main_menu_window.deiconify()
 
-# Créer l'interface du jeu en fonction du niveau de difficulté choisi
-def creer_interface(difficulte, fenetre_menu):
-    global fenetre_jeu, difficulte_actuelle, mots_trouves, labels_mots, grille
-    fenetre_menu.withdraw() 
-    difficulte_actuelle = difficulte
+# Create the game interface based on the selected difficulty level
+def create_interface(difficulty, main_menu_window):
+    global game_window, current_difficulty, found_words, word_labels, grid
+    main_menu_window.withdraw() 
+    current_difficulty = difficulty
 
-    mots_fr = charger_mots_francais()
+    french_words = load_french_words()
 
-    if difficulte == "Medium":
-        lignes, colonnes = 7, 15
-        mots = [generer_mot_aleatoire(mots_fr, 4, 6) for _ in range(10)]  
-    elif difficulte == "Hard":
-        lignes, colonnes = 15, 30
-        mots = [generer_mot_aleatoire(mots_fr, 6, 9) for _ in range(10)]  
+    if difficulty == "Medium":
+        rows, columns = 7, 15
+        words = [generate_random_word(french_words, 4, 6) for _ in range(10)]  
+    elif difficulty == "Hard":
+        rows, columns = 15, 30
+        words = [generate_random_word(french_words, 6, 9) for _ in range(10)]  
     else:
-        lignes, colonnes = 5, 10
-        mots = [generer_mot_aleatoire(mots_fr, 1, 3) for _ in range(10)]  
+        rows, columns = 5, 10
+        words = [generate_random_word(french_words, 1, 3) for _ in range(10)]  
 
-    fenetre_jeu = tk.Toplevel(fenetre_menu)  
-    fenetre_jeu.title(f"Mot Mélangé - Niveau {difficulte}")
+    game_window = tk.Toplevel(main_menu_window)  
+    game_window.title(f"Word Scrambler - Level {difficulty}")
 
-    frame_jeu = tk.Frame(fenetre_jeu)
-    frame_jeu.pack(fill=tk.BOTH, expand=True)
+    game_frame = tk.Frame(game_window)
+    game_frame.pack(fill=tk.BOTH, expand=True)
 
-    grille = creer_grille(frame_jeu, lignes, colonnes)
-    labels_mots = creer_liste_mots(frame_jeu, mots, colonnes)
-    mots_trouves = []
+    grid = create_grid(game_frame, rows, columns)
+    word_labels = create_word_list(game_frame, words, columns)
+    found_words = []
 
-    memoriser_disposition_lettres(grille)
+    store_letter_arrangement(grid)
 
-    for mot in mots:
-        placer_mot_dans_grille(mot.upper(), grille)
+    for word in words:
+        place_word_in_grid(word.upper(), grid)
 
-    barre_menu = tk.Menu(fenetre_jeu)
-    fenetre_jeu.config(menu=barre_menu)
+    menu_bar = tk.Menu(game_window)
+    game_window.config(menu=menu_bar)
 
-    barre_menu.add_command(label="← Menu", command=lambda: retourner_au_menu(fenetre_jeu, fenetre_menu))
+    menu_bar.add_command(label="← Menu", command=lambda: return_to_menu(game_window, main_menu_window))
 
-# Créer le menu principal pour sélectionner le niveau de difficulté
-def creer_menu():
-    fenetre_principale = tk.Tk()
-    fenetre_principale.title("Menu Principal")
+# Create the main menu to select the difficulty level
+def create_menu():
+    main_menu_window = tk.Tk()
+    main_menu_window.title("Main Menu")
 
-    label = tk.Label(fenetre_principale, text="Select difficulty :")
+    label = tk.Label(main_menu_window, text="Select difficulty :")
     label.pack(pady=10)
 
-    buttons_frame = tk.Frame(fenetre_principale)
+    buttons_frame = tk.Frame(main_menu_window)
     buttons_frame.pack(pady=5)
 
-    easy_button = tk.Button(buttons_frame, text="Easy", command=lambda: creer_interface("Easy", fenetre_principale))
+    easy_button = tk.Button(buttons_frame, text="Easy", command=lambda: create_interface("Easy", main_menu_window))
     easy_button.grid(row=0, column=0, padx=5)
 
-    medium_button = tk.Button(buttons_frame, text="Medium", command=lambda: creer_interface("Medium", fenetre_principale))
+    medium_button = tk.Button(buttons_frame, text="Medium", command=lambda: create_interface("Medium", main_menu_window))
     medium_button.grid(row=0, column=1, padx=5)
 
-    hard_button = tk.Button(buttons_frame, text="Hard", command=lambda: creer_interface("Hard", fenetre_principale))
+    hard_button = tk.Button(buttons_frame, text="Hard", command=lambda: create_interface("Hard", main_menu_window))
     hard_button.grid(row=0, column=2, padx=5)
 
-    exit_button = tk.Button(fenetre_principale, text="Exit", command=fenetre_principale.destroy)
+    exit_button = tk.Button(main_menu_window, text="Exit", command=main_menu_window.destroy)
     exit_button.pack(pady=5)
 
-    fenetre_principale.mainloop()
+    main_menu_window.mainloop()
 
-# Créer la fenêtre de démarrage du jeu
-creer_fenetre_demarrage()
+# Create the game start window
+create_start_window()
